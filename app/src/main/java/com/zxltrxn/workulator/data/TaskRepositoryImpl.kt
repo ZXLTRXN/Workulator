@@ -8,7 +8,7 @@ import com.zxltrxn.workulator.utils.toTaskModel
 import com.zxltrxn.workulator.utils.toTaskModelStorage
 
 class TaskRepositoryImpl(private val taskStorage: TaskStorage):TaskRepository {
-    override fun createTask(task: TaskModel): Boolean = taskStorage.save(task.toTaskModelStorage())
+    override fun createTask(task: TaskModel): Boolean = taskStorage.insert(task.toTaskModelStorage())
 
     override fun readTasks(): List<TaskModel> = taskStorage.getAll().map{it.toTaskModel()}
 

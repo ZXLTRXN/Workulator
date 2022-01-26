@@ -5,7 +5,7 @@ import com.zxltrxn.workulator.data.storage.TaskStorage
 import com.zxltrxn.workulator.data.storage.models.TaskModelStorage
 
 class DBTaskStorage(private val context: Context): TaskStorage {
-    override fun save(task: TaskModelStorage): Boolean {
+    override fun insert(task: TaskModelStorage): Boolean {
         TODO("Not yet implemented")
     }
 
