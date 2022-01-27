@@ -4,5 +4,4 @@ data class TaskModel(val id: UInt,
                 val name:String,
                 val targetTime:Int,
                 val period:Period,
-                val isActive:Boolean = true) {
-}
+                val isActive:Boolean = true)
