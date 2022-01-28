@@ -21,6 +21,7 @@ class Utils {
     val target = arrayOf(2500,-1)
     val period = arrayOf(Period.WEEK,Period.DAY)
     val isActive = arrayOf(false,true)
+    val presets = listOf(200,3256)
 
     val date = arrayOf(LocalDate.now(),LocalDate.of(2018, 12, 1))
     val week = arrayOf(DEFAULT_WEEK,7)
@@ -30,10 +31,10 @@ class Utils {
     fun shouldConvertTaskModelToTaskModelStorageCorrectly(){
         for(i in size){
             val expected =  TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i], isActive = isActive[i])
+                targetTime = target[i], period = period[i], presets = presets, isActive = isActive[i])
 
             val actual = TaskModelStorage(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i].minutes, isActive = isActive[i])
+                targetTime = target[i], period = period[i].minutes, presets = presets, isActive = isActive[i])
 
             assertEquals(actual.toTaskModel(),expected)
             assertEquals(expected.toTaskModelStorage(),actual)
@@ -58,7 +59,8 @@ class Utils {
     fun shouldConvertTaskTimeModelToTaskTimeModelStorageCorrectly(){
         for(i in size){
             val task = TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i], isActive = isActive[i])
+                targetTime = target[i], period = period[i],
+                presets = presets, isActive = isActive[i])
 
             val expected =  TaskTimeModel(task = task, currentTime = target[i])
 
@@ -73,10 +75,12 @@ class Utils {
     fun shouldConvertTaskEventsModelToTaskEventsModelStorageCorrectly(){
         for(i in size){
             val task = TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i], isActive = isActive[i])
+                targetTime = target[i], period = period[i],
+                presets = presets, isActive = isActive[i])
 
             val task1 = TaskModelStorage(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i].minutes, isActive = isActive[i])
+                targetTime = target[i], period = period[i].minutes,
+                presets = presets, isActive = isActive[i])
 
             val events =  listOf(
                 EventModel(date = date[0], taskId = id[0],
