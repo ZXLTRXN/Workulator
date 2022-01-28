@@ -6,8 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskEventsRepository {
         fun readAllTasksWithEvents(): Flow<List<TaskEventsModel>>
-
-        fun getTaskIds():Flow<List<UInt>>
-
         fun readTaskWithTime(id: UInt):TaskTimeModel
 }

@@ -14,17 +14,20 @@ fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 }
 
 fun TaskModel.toTaskModelStorage():TaskModelStorage = TaskModelStorage(id = this.id,name = this.name,
-        targetTime = this.targetTime,period = this.period.minutes,isActive = this.isActive)
+        targetTime = this.targetTime,period = this.period.minutes,presets = this.presets,
+    isActive = this.isActive)
 
 
 fun TaskModelStorage.toTaskModel():TaskModel {
     val period:Period = when(this.period){
         Period.DAY.minutes->Period.DAY
         Period.WEEK.minutes->Period.WEEK
+        Period.MONTHS.minutes->Period.MONTHS
         else-> throw InputMismatchException("TaskModelStorage to TaskModel period not in Enum")
     }
     return TaskModel(id = this.id,name = this.name,
-        targetTime = this.targetTime,period = period,isActive = this.isActive)
+        targetTime = this.targetTime,period = period, presets = this.presets,
+        isActive = this.isActive)
 }
 
 

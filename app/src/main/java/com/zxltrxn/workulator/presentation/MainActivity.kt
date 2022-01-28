@@ -3,6 +3,7 @@ package com.zxltrxn.workulator.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -14,6 +15,9 @@ import com.zxltrxn.workulator.ui.theme.WorkulatorTheme
 
 
 class MainActivity : ComponentActivity() {
+
+    private val vm by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

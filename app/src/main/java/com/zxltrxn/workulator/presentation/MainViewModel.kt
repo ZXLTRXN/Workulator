@@ -1,7 +1,13 @@
 package com.zxltrxn.workulator.presentation
 
-class MainViewModel {
+import androidx.lifecycle.ViewModel
 
+class MainViewModel :ViewModel(){
+
+
+    fun init(){
+
+    }
 //    private val rep by lazy(LazyThreadSafetyMode.NONE){
 //        repImpl(DBStorage(context))
 //    }

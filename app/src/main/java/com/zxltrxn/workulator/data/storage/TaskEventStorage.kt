@@ -10,12 +10,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskEventStorage {
     fun insertTask(task: TaskModelStorage): Boolean
+    fun getTaskIds():Flow<List<UInt>>
     fun updateTask(task: TaskModelStorage):Boolean
+
+    fun readTaskWithTime(id: UInt): TaskTimeModelStorage
     fun getAllTasksWithEvents(): Flow<List<TaskEventsModelStorage>>
 
     fun insertEvent(event: EventModelStorage): Boolean
-
-    fun getTaskIds():Flow<List<UInt>>
-
-    fun readTaskWithTime(id: UInt): TaskTimeModelStorage
 }
