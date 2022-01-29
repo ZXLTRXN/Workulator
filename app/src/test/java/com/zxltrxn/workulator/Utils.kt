@@ -1,9 +1,9 @@
 package com.zxltrxn.workulator
 
-import com.zxltrxn.workulator.data.storage.models.EventModelStorage
-import com.zxltrxn.workulator.data.storage.models.TaskEventsModelStorage
-import com.zxltrxn.workulator.data.storage.models.TaskModelStorage
-import com.zxltrxn.workulator.data.storage.models.TaskTimeModelStorage
+import com.zxltrxn.workulator.data.models.EventModelStorage
+import com.zxltrxn.workulator.data.models.TaskEventsModelStorage
+import com.zxltrxn.workulator.data.models.TaskModelStorage
+import com.zxltrxn.workulator.data.models.TaskTimeModelStorage
 import com.zxltrxn.workulator.domain.models.*
 import com.zxltrxn.workulator.utils.*
 import com.zxltrxn.workulator.utils.Constants.DEFAULT_WEEK

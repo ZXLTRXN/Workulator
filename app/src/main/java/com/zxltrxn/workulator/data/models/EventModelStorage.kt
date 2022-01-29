@@ -1,4 +1,4 @@
-package com.zxltrxn.workulator.data.storage.models
+package com.zxltrxn.workulator.data.models
 
 import java.time.LocalDate
 

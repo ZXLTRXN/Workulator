@@ -2,8 +2,9 @@ package com.zxltrxn.workulator.domain.usecases
 
 import com.zxltrxn.workulator.domain.repositoryinterfaces.TaskRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 class GetTasks(private val taskRepo: TaskRepository) {
 
-    fun execute(): Flow<List<UInt>> = taskRepo.getTaskIds()
+    operator fun invoke(): StateFlow<List<UInt>> = taskRepo.getTaskIds()
 }
