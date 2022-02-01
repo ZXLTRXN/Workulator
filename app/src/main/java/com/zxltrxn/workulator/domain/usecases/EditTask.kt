@@ -5,5 +5,5 @@ import com.zxltrxn.workulator.domain.repositoryinterfaces.TaskRepository
 
 class EditTask(private val taskRepo: TaskRepository) {
 
-    operator fun invoke(newTask:TaskModel):Boolean = taskRepo.updateTask(newTask)
+    operator fun invoke(newTask:TaskModel) = taskRepo.updateTask(newTask)
 }

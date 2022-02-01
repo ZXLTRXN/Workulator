@@ -9,11 +9,12 @@ import java.util.*
 
 
 class SetEvent(private val eventRepo: EventRepository) {
-    operator fun invoke(event: EventModel):Boolean {
+    operator fun invoke(event: EventModel) {
 //        val date: LocalDate = LocalDate.now()
 //        val date = LocalDate.of(year, month, day)
+
         event.week = event.date.get(WeekFields.of(Locale.getDefault()).weekOfYear())
-        return eventRepo.createEvent(event)
+        eventRepo.createEvent(event)
     }
 
 }

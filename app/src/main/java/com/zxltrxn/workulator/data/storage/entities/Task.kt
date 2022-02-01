@@ -9,7 +9,6 @@ data class Task (
     @PrimaryKey(autoGenerate = true) val id:UInt,
     @NonNull val name:String,
     @NonNull val target_time:Int,
-    @NonNull val reset_period:Int,
     @NonNull val presets:List<Int>,
     @NonNull val is_active:Boolean
 )

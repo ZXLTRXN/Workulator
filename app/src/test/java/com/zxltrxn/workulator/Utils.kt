@@ -1,9 +1,7 @@
 package com.zxltrxn.workulator
 
-import com.zxltrxn.workulator.data.models.EventModelStorage
-import com.zxltrxn.workulator.data.models.TaskEventsModelStorage
-import com.zxltrxn.workulator.data.models.TaskModelStorage
-import com.zxltrxn.workulator.data.models.TaskTimeModelStorage
+import com.zxltrxn.workulator.data.models.*
+import com.zxltrxn.workulator.data.storage.entities.*
 import com.zxltrxn.workulator.domain.models.*
 import com.zxltrxn.workulator.utils.*
 import com.zxltrxn.workulator.utils.Constants.DEFAULT_WEEK
@@ -19,87 +17,89 @@ class Utils {
     val size = id.indices
     val name = arrayOf(",к112","Работать в поте лица")
     val target = arrayOf(2500,-1)
-    val period = arrayOf(Period.WEEK,Period.DAY)
     val isActive = arrayOf(false,true)
     val presets = listOf(200,3256)
-
     val date = arrayOf(LocalDate.now(),LocalDate.of(2018, 12, 1))
     val week = arrayOf(DEFAULT_WEEK,7)
 
-
     @Test
-    fun shouldConvertTaskModelToTaskModelStorageCorrectly(){
-        for(i in size){
-            val expected =  TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i], presets = presets, isActive = isActive[i])
-
-            val actual = TaskModelStorage(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i].minutes, presets = presets, isActive = isActive[i])
-
-            assertEquals(actual.toTaskModel(),expected)
-            assertEquals(expected.toTaskModelStorage(),actual)
+    fun shouldConvertLocalTimetoLongCorrectly(){
+        for (i in size){
+            val a = date[i].toLong()
+            val b = a.toLocalDate()
+            assertEquals(date[i],b)
         }
     }
 
     @Test
-    fun shouldConvertEventModelToEventModelStorageCorrectly(){
+    fun shouldConvertTaskModelToTaskCorrectly(){
+        for(i in size){
+            val expected =  TaskModel(id = id[i],name = name[i],
+                targetTime = target[i], presets = presets, isActive = isActive[i])
+
+            val actual = Task(id = id[i],name = name[i],
+                target_time = target[i], presets = presets, is_active = isActive[i])
+
+            assertEquals(actual.toTaskModel(),expected)
+            assertEquals(expected.toTask(),actual)
+        }
+    }
+
+    @Test
+    fun shouldConvertEventModelToEventWithWeekCorrectly(){
         for(i in size){
             val expected =  EventModel(date = date[i], taskId = id[i],
                 time = target[i],week = week[i])
 
-            val actual =  EventModelStorage(date = date[i], taskId = id[i],
-                time = target[i],week = week[i])
+            val event = Event(date = date[i].toLong(), task_id = id[i],time = target[i])
+
+            val actual =  EventWithWeek(event, week = week[i])
 
             assertEquals(actual.toEventModel(),expected)
-            assertEquals(expected.toEventModelStorage(),actual)
+            assertEquals(expected.toEventWithWeek(),actual)
         }
     }
 
     @Test
-    fun shouldConvertTaskTimeModelToTaskTimeModelStorageCorrectly(){
+    fun shouldConvertTaskTimeModelToTaskCurrentTimeCorrectly(){
         for(i in size){
             val task = TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i],
-                presets = presets, isActive = isActive[i])
+                targetTime = target[i], presets = presets, isActive = isActive[i])
 
             val expected =  TaskTimeModel(task = task, currentTime = target[i])
 
-            val actual =  TaskTimeModelStorage(task = task.toTaskModelStorage(), currentTime = target[i])
+            val actual =  TaskCurrentTime(task = task.toTask(), currentTime = target[i])
 
             assertEquals(actual.toTaskTimeModel(),expected)
-            assertEquals(expected.toTaskTimeModelStorage(),actual)
+            assertEquals(expected.toTaskCurrentTime(),actual)
         }
     }
 
     @Test
-    fun shouldConvertTaskEventsModelToTaskEventsModelStorageCorrectly(){
+    fun shouldConvertTaskEventsModelToTaskWithEventsCorrectly(){
         for(i in size){
             val task = TaskModel(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i],
-                presets = presets, isActive = isActive[i])
+                targetTime = target[i], presets = presets, isActive = isActive[i])
 
-            val task1 = TaskModelStorage(id = id[i],name = name[i],
-                targetTime = target[i], period = period[i].minutes,
-                presets = presets, isActive = isActive[i])
+            val task1 = Task(id = id[i],name = name[i],
+                target_time = target[i], presets = presets, is_active = isActive[i])
 
-            val events =  listOf(
-                EventModel(date = date[0], taskId = id[0],
-                time = target[0],week = week[0]),
-                EventModel(date = date[1], taskId = id[1],
-                time = target[1],week = week[1]))
+            val events = mutableListOf<EventModel>()
+            val events1 = mutableListOf<EventWithWeek>()
+            for (j in size){
+                events.add(EventModel(date = date[j], taskId = id[j],
+                    time = target[j],week = week[j]))
 
-            val events1 =  listOf(
-                EventModelStorage(date = date[0], taskId = id[0],
-                    time = target[0],week = week[0]),
-                EventModelStorage(date = date[1], taskId = id[1],
-                    time = target[1],week = week[1]))
+                val e = Event(date = date[j].toLong(), task_id = id[j],time = target[j])
+                events1.add(EventWithWeek(e, week = week[j]))
+            }
 
             val expected =  TaskEventsModel(task = task, events = events)
 
-            val actual =  TaskEventsModelStorage(task = task1, events = events1)
+            val actual =  TaskWithEvents(task = task1, events = events1)
 
             assertEquals(actual.toTaskEventsModel(),expected)
-            assertEquals(expected.toTaskEventsModelStorage(),actual)
+            assertEquals(expected.toTaskWithEvents(),actual)
         }
     }
 }

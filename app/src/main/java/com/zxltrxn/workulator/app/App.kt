@@ -1,6 +1,7 @@
 package com.zxltrxn.workulator.app
 
 import android.app.Application
+import com.zxltrxn.workulator.BuildConfig
 import com.zxltrxn.workulator.di.appModule
 import com.zxltrxn.workulator.di.dataModule
 import com.zxltrxn.workulator.di.domainModule
@@ -15,9 +16,8 @@ class App:Application() {
         super.onCreate()
 
         startKoin {
-            androidLogger(Level.DEBUG)
+            androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@App)
             modules(listOf(appModule, domainModule, dataModule)) }
-
     }
 }

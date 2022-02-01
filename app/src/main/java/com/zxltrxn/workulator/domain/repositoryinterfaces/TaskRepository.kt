@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface TaskRepository {
-    fun createTask(task:TaskModel):Boolean
-    fun updateTask(newTask:TaskModel):Boolean
+    fun createTask(task:TaskModel)
+    fun updateTask(newTask:TaskModel)
     fun getTaskIds(): StateFlow<List<UInt>>
 }

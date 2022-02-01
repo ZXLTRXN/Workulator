@@ -3,49 +3,52 @@ package com.zxltrxn.workulator.utils
 import android.content.Context
 import android.widget.Toast
 import com.zxltrxn.workulator.data.models.*
+import com.zxltrxn.workulator.data.storage.entities.*
 import com.zxltrxn.workulator.domain.models.*
-import java.util.*
+import java.time.LocalDate
 
 fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
 
-fun TaskModel.toTaskModelStorage():TaskModelStorage = TaskModelStorage(id = this.id,name = this.name,
-        targetTime = this.targetTime,period = this.period.minutes,presets = this.presets,
-    isActive = this.isActive)
 
 
-fun TaskModelStorage.toTaskModel():TaskModel {
-    val period:Period = when(this.period){
-        Period.DAY.minutes->Period.DAY
-        Period.WEEK.minutes->Period.WEEK
-        Period.MONTHS.minutes->Period.MONTHS
-        else-> throw InputMismatchException("TaskModelStorage to TaskModel period not in Enum")
-    }
-    return TaskModel(id = this.id,name = this.name,
-        targetTime = this.targetTime,period = period, presets = this.presets,
-        isActive = this.isActive)
-}
+fun LocalDate.toLong():Long = this.toEpochDay()
+
+fun Long.toLocalDate():LocalDate = LocalDate.ofEpochDay(this)
 
 
-fun EventModel.toEventModelStorage():EventModelStorage = EventModelStorage(date = this.date,
-    taskId = this.taskId, time = this.time, week = this.week)
 
-fun EventModelStorage.toEventModel():EventModel = EventModel(date = this.date,
-    taskId = this.taskId, time = this.time, week = this.week)
+fun TaskModel.toTask(): Task = Task(id = this.id,name = this.name,
+        target_time = this.targetTime,presets = this.presets, is_active = this.isActive)
+
+fun Task.toTaskModel():TaskModel = TaskModel(id = this.id, name = this.name,
+        targetTime = this.target_time, presets = this.presets, isActive = this.is_active)
 
 
-fun TaskTimeModelStorage.toTaskTimeModel(): TaskTimeModel = TaskTimeModel(
+
+fun EventModel.toEventWithWeek():EventWithWeek = EventWithWeek(
+    Event(date = this.date.toLong(), task_id = this.taskId, time = this.time),
+    week = this.week)
+
+fun EventWithWeek.toEventModel():EventModel = EventModel(date = this.event.date.toLocalDate(),
+    taskId = this.event.task_id, time = this.event.time, week = this.week)
+
+
+
+fun TaskCurrentTime.toTaskTimeModel(): TaskTimeModel = TaskTimeModel(
     task = this.task.toTaskModel(), currentTime = this.currentTime)
 
-fun TaskTimeModel.toTaskTimeModelStorage(): TaskTimeModelStorage = TaskTimeModelStorage(
-    task = this.task.toTaskModelStorage(), currentTime = this.currentTime)
+fun TaskTimeModel.toTaskCurrentTime(): TaskCurrentTime = TaskCurrentTime(
+    task = this.task.toTask(), currentTime = this.currentTime)
 
 
-fun TaskEventsModelStorage.toTaskEventsModel(): TaskEventsModel = TaskEventsModel(
-    task = this.task.toTaskModel(), events = this.events.map{it.toEventModel()}
-)
 
-fun TaskEventsModel.toTaskEventsModelStorage(): TaskEventsModelStorage = TaskEventsModelStorage(
-    task = this.task.toTaskModelStorage(), events = this.events.map{it.toEventModelStorage()}
-)
+fun TaskWithEvents.toTaskEventsModel(): TaskEventsModel = TaskEventsModel(
+    task = this.task.toTaskModel(), events = this.events.map{it.toEventModel()})
+
+fun TaskEventsModel.toTaskWithEvents(): TaskWithEvents = TaskWithEvents(
+    task = this.task.toTask(), events = this.events.map{it.toEventWithWeek()})
+
+
+
