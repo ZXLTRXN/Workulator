@@ -1,6 +1,7 @@
 package com.zxltrxn.workulator.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +17,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.zxltrxn.workulator.ui.theme.WorkulatorTheme
+import com.zxltrxn.workulator.utils.Constants.TAG
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +29,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "onCreate: ${vm.getf()}")
 
 
 //        lifecycleScope.launch { правильный подход
@@ -42,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    Greeting("aa")
                 }
             }
         }
@@ -57,7 +62,7 @@ fun Greeting(name: String) {
 
 //@Composable
 //fun MainScreen() {
-//    val lifecycleOwner = LocalLifecycleOwner.current
+////    val lifecycleOwner = LocalLifecycleOwner.current
 //
 //    var currentTimeFlow by remeber{mutableStateOf("")}
 //}

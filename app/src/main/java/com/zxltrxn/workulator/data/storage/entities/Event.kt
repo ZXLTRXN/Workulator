@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import java.time.LocalDate
 
-@Entity(primaryKeys = ["date_id","task_id"],
+@Entity(primaryKeys = ["date","task_id"],
     foreignKeys = arrayOf(ForeignKey(entity = Task::class,
-        parentColumns = arrayOf("id"),
+        parentColumns = arrayOf("task_id"),
         childColumns = arrayOf("task_id"),
         onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = Date::class,
@@ -15,7 +15,9 @@ import java.time.LocalDate
         childColumns = arrayOf("date"),
         onDelete = ForeignKey.NO_ACTION)))
 data class Event(
-    val date: Long,
-    val task_id:UInt,
-    @NonNull val time:Int
+
+    var date: Long,
+    var task_id:Long,
+    @NonNull
+    var time:Int
 )

@@ -23,7 +23,7 @@ class Utils {
     val week = arrayOf(DEFAULT_WEEK,7)
 
     @Test
-    fun shouldConvertLocalTimetoLongCorrectly(){
+    fun shouldConvertLocalTimeToLongCorrectly(){
         for (i in size){
             val a = date[i].toLong()
             val b = a.toLocalDate()
@@ -57,6 +57,30 @@ class Utils {
 
             assertEquals(actual.toEventModel(),expected)
             assertEquals(expected.toEventWithWeek(),actual)
+        }
+    }
+
+    @Test
+    fun shouldConvertEventModelToEventCorrectly(){
+        for(i in size){
+            val expected =  EventModel(date = date[i], taskId = id[i],
+                time = target[i],week = week[i])
+
+            val actual = Event(date = date[i].toLong(), task_id = id[i],time = target[i])
+
+            assertEquals(expected.toEvent(),actual)
+        }
+    }
+
+    @Test
+    fun shouldConvertEventModelToDateCorrectly(){
+        for(i in size){
+            val expected =  EventModel(date = date[i], taskId = id[i],
+                time = target[i],week = week[i])
+
+            val actual = Date(date = date[i].toLong(), week_num = week[i])
+
+            assertEquals(expected.toDate(),actual)
         }
     }
 

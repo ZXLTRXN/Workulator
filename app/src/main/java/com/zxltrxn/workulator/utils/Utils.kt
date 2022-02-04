@@ -1,7 +1,9 @@
 package com.zxltrxn.workulator.utils
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.zxltrxn.workulator.data.models.*
 import com.zxltrxn.workulator.data.storage.entities.*
 import com.zxltrxn.workulator.domain.models.*
@@ -19,17 +21,19 @@ fun Long.toLocalDate():LocalDate = LocalDate.ofEpochDay(this)
 
 
 
-fun TaskModel.toTask(): Task = Task(id = this.id,name = this.name,
-        target_time = this.targetTime,presets = this.presets, is_active = this.isActive)
+fun TaskModel.toTask(): Task = Task(task_id = this.id,name = this.name,
+        target_time = this.targetTime,presets = this.presets, active = this.isActive)
 
-fun Task.toTaskModel():TaskModel = TaskModel(id = this.id, name = this.name,
-        targetTime = this.target_time, presets = this.presets, isActive = this.is_active)
+fun Task.toTaskModel():TaskModel = TaskModel(id = this.task_id, name = this.name,
+        targetTime = this.target_time, presets = this.presets, isActive = this.active)
 
 
 
-fun EventModel.toEventWithWeek():EventWithWeek = EventWithWeek(
-    Event(date = this.date.toLong(), task_id = this.taskId, time = this.time),
-    week = this.week)
+fun EventModel.toEvent():Event = Event(date = this.date.toLong(), task_id = this.taskId,time = this.time)
+
+fun EventModel.toDate():Date = Date(date = this.date.toLong(), week_num = this.week)
+
+fun EventModel.toEventWithWeek():EventWithWeek = EventWithWeek(this.toEvent(), week = this.week)
 
 fun EventWithWeek.toEventModel():EventModel = EventModel(date = this.event.date.toLocalDate(),
     taskId = this.event.task_id, time = this.event.time, week = this.week)

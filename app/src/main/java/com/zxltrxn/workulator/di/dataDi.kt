@@ -18,11 +18,11 @@ val dataModule = module{
         Room.databaseBuilder(
             androidApplication(),
             AppDatabase::class.java,
-            "APPDATABASE"
+            "app-db"
         ).build()
     }
 
-    single<TaskEventDao>{
+    single{
         val database = get<AppDatabase>()
         database.getDao()
     }

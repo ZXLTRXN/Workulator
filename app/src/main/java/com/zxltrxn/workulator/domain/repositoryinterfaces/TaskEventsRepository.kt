@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface TaskEventsRepository {
         fun readAllTasksWithEvents(): Flow<List<TaskEventsModel>>
-        fun readTaskWithTime(id: UInt, week:Int):TaskTimeModel
+        fun readTaskWithTime(id: Long, week:Int):TaskTimeModel
 }

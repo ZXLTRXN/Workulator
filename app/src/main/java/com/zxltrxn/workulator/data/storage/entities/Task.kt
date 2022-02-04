@@ -3,12 +3,19 @@ package com.zxltrxn.workulator.data.storage.entities
 import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.zxltrxn.workulator.utils.Constants.DEFAULT_ID
 
 @Entity
 data class Task (
-    @PrimaryKey(autoGenerate = true) val id:UInt,
-    @NonNull val name:String,
-    @NonNull val target_time:Int,
-    @NonNull val presets:List<Int>,
-    @NonNull val is_active:Boolean
+    @NonNull
+    var name:String,
+    @NonNull
+    var target_time:Int,
+    @NonNull
+    var presets:List<Int>,
+    @NonNull
+    var active:Boolean,
+
+    @PrimaryKey(autoGenerate = true)
+    var task_id:Long = DEFAULT_ID,
 )
