@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 class GetTaskStatus(private val taskEventsRepo: TaskEventsRepository) {
 
-    operator fun invoke(id: UInt, week:Int):TaskTimeModel = taskEventsRepo.readTaskWithTime(id, week)
+    operator fun invoke(id: Long, week:Int):TaskTimeModel = taskEventsRepo.readTaskWithTime(id, week)
 }

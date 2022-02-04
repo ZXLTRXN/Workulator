@@ -12,5 +12,5 @@ class TaskRepositoryImpl(private val storage: TaskEventDao): TaskRepository {
 
     override fun updateTask(newTask: TaskModel) = storage.updateTask(newTask.toTask())
 
-    override fun getTaskIds(): StateFlow<List<UInt>> = storage.getTaskIds()
+    override fun getTaskIds(): StateFlow<List<Long>> = storage.getTaskIds()
 }
