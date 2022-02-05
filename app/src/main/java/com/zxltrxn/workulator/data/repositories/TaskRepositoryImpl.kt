@@ -4,6 +4,7 @@ import com.zxltrxn.workulator.data.storage.TaskEventDao
 import com.zxltrxn.workulator.domain.repositoryinterfaces.TaskRepository
 import com.zxltrxn.workulator.domain.models.TaskModel
 import com.zxltrxn.workulator.utils.toTask
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 class TaskRepositoryImpl(private val storage: TaskEventDao): TaskRepository {
@@ -12,5 +13,5 @@ class TaskRepositoryImpl(private val storage: TaskEventDao): TaskRepository {
 
     override fun updateTask(newTask: TaskModel) = storage.updateTask(newTask.toTask())
 
-    override fun getTaskIds(): StateFlow<List<Long>> = storage.getTaskIds()
+    override fun getTaskIds(): Flow<List<Long>> = storage.getTaskIds()
 }

@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 class GetTasks(private val taskRepo: TaskRepository) {
 
-    operator fun invoke(): StateFlow<List<Long>> = taskRepo.getTaskIds()
+    operator fun invoke(): Flow<List<Long>> = taskRepo.getTaskIds()
 }

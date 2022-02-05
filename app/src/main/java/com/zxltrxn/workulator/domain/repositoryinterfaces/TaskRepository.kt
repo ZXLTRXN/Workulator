@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.StateFlow
 interface TaskRepository {
     fun createTask(task:TaskModel)
     fun updateTask(newTask:TaskModel)
-    fun getTaskIds(): StateFlow<List<Long>>
+    fun getTaskIds(): Flow<List<Long>>
 }

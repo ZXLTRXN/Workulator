@@ -17,22 +17,21 @@ interface TaskEventDao {
     fun updateTask(task: Task)
 
     @Query("select task_id from task")
-    fun getTaskIds(): StateFlow<List<Long>>
+    fun getTaskIds(): Flow<List<Long>>
 
-
-    @Query("select task.*, culc_time.* " +
+    @Query("select task.*, tmp.currentTime " +
             "from task join (" +
-                "select sum(event.time) " +
+                "select sum(event.time) as currentTime " +
                 "from event join date on event.date = date.date " +
-                "where event.task_id=:id and date.week_num =:week) as culc_time")
+                "where event.task_id=:id and date.week_num =:week) as tmp")
     fun readTaskWithTime(id: Long, week:Int): TaskCurrentTime
 
-    @Query("select task.* " +
-            "from task join (" +
-                "select event.*, date.week_num " +
-                "from event join date on date.date = event.date) as event_week " +
-            "on event_week.task_id = task.task_id")
-    fun getAllTasksWithEvents(): Flow<List<TaskWithEvents>>
+//    @Query("select task.* " +
+//            "from task join (" +
+//                "select event.*, date.week_num " +
+//                "from event join date on date.date = event.date) as event_week " +
+//            "on event_week.task_id = task.task_id")
+//    fun getAllTasksWithEvents(): Flow<List<TaskWithEvents>>
 
 //    https://developer.android.com/reference/android/arch/persistence/room/Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)

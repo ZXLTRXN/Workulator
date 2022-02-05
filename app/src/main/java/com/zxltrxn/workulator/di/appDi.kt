@@ -7,14 +7,12 @@ import org.koin.dsl.module
 val appModule = module{
     viewModel<MainViewModel>{
         MainViewModel(
-            storage = get()
-
-//            setTask = get(),
-//        editTask = get(),
-//        getTasks = get(),
-//        getTaskStatus = get(),
-//        getStatsForTasks = get(),
-//        setEvent = get()
+        setTask = get(),
+        editTask = get(),
+        getTasks = get(),
+        getTaskStatus = get(),
+        getStatsForTasks = get(),
+        setEvent = get()
         )
     }
 }

@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.map
 
 class TaskEventsRepositoryImpl(private val storage: TaskEventDao):TaskEventsRepository {
 
-    override fun readAllTasksWithEvents(): Flow<List<TaskEventsModel>> =
-        storage.getAllTasksWithEvents().map{tasks->tasks.map{it.toTaskEventsModel()}}
+//    override fun readAllTasksWithEvents(): Flow<List<TaskEventsModel>> =
+//        storage.getAllTasksWithEvents().map{tasks->tasks.map{it.toTaskEventsModel()}}
 
     override fun readTaskWithTime(id: Long, week:Int): TaskTimeModel =
         storage.readTaskWithTime(id, week).toTaskTimeModel()
