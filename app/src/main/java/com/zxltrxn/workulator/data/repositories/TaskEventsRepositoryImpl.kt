@@ -15,6 +15,6 @@ class TaskEventsRepositoryImpl(private val storage: TaskEventDao):TaskEventsRepo
 //        storage.getAllTasksWithEvents().map{tasks->tasks.map{it.toTaskEventsModel()}}
 
     override fun readTaskWithTime(id: Long, week:Int): TaskTimeModel =
-        storage.readTaskWithTime(id, week).toTaskTimeModel()
+        storage.getTaskWithTime(id, week).toTaskTimeModel()
 
 }

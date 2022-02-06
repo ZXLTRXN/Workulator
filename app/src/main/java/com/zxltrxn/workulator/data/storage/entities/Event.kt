@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 @Entity(primaryKeys = ["date","task_id"],
     foreignKeys = arrayOf(ForeignKey(entity = Task::class,
-        parentColumns = arrayOf("task_id"),
+        parentColumns = arrayOf("id"),
         childColumns = arrayOf("task_id"),
         onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = Date::class,

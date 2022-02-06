@@ -20,5 +20,5 @@ data class Task (
     var active:Boolean,
 
     @PrimaryKey(autoGenerate = true)
-    var task_id:Long = DEFAULT_ID,
+    var id:Long = DEFAULT_ID,
 )

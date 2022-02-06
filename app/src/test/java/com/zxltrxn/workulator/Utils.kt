@@ -5,7 +5,7 @@ import com.zxltrxn.workulator.data.storage.entities.*
 import com.zxltrxn.workulator.domain.models.*
 import com.zxltrxn.workulator.utils.*
 import com.zxltrxn.workulator.utils.Constants.DEFAULT_WEEK
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 
 import org.junit.Test
 import java.time.LocalDate
@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 class Utils {
 
-    val id = arrayOf(10u,3523513222u)
+    val id = arrayOf(10,3523513222)
     val size = id.indices
     val name = arrayOf(",к112","Работать в поте лица")
     val target = arrayOf(2500,-1)
@@ -38,7 +38,7 @@ class Utils {
                 targetTime = target[i], presets = presets, isActive = isActive[i])
 
             val actual = Task(id = id[i],name = name[i],
-                target_time = target[i], presets = presets, is_active = isActive[i])
+                target_time = target[i], presets = presets, active = isActive[i])
 
             assertEquals(actual.toTaskModel(),expected)
             assertEquals(expected.toTask(),actual)
@@ -106,7 +106,7 @@ class Utils {
                 targetTime = target[i], presets = presets, isActive = isActive[i])
 
             val task1 = Task(id = id[i],name = name[i],
-                target_time = target[i], presets = presets, is_active = isActive[i])
+                target_time = target[i], presets = presets, active = isActive[i])
 
             val events = mutableListOf<EventModel>()
             val events1 = mutableListOf<EventWithWeek>()
@@ -125,5 +125,24 @@ class Utils {
             assertEquals(actual.toTaskEventsModel(),expected)
             assertEquals(expected.toTaskWithEvents(),actual)
         }
+    }
+
+    @Test
+    fun shouldCheckEquivalentCorrectly(){
+        var i = 0
+        val t1 = Task(id = id[i],name = name[i],
+            target_time = target[i], presets = presets, active = isActive[i])
+
+        val t2 = Task(id = id[i+1],name = name[i],
+            target_time = target[i], presets = presets, active = isActive[i])
+
+        val t3 = Task(id = id[i],name = name[i+1],
+            target_time = target[i], presets = presets, active = isActive[i])
+
+        assertTrue(t1.isEquivalent(t2))
+        assertFalse(t1.isEquivalent(t3))
+
+
+
     }
 }

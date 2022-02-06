@@ -16,15 +16,15 @@ interface TaskEventDao {
     @Update
     fun updateTask(task: Task)
 
-    @Query("select task_id from task")
-    fun getTaskIds(): Flow<List<Long>>
+    @Query("select id from task")
+    fun getTaskIds(): List<Long>
 
     @Query("select task.*, tmp.currentTime " +
             "from task join (" +
                 "select sum(event.time) as currentTime " +
                 "from event join date on event.date = date.date " +
                 "where event.task_id=:id and date.week_num =:week) as tmp")
-    fun readTaskWithTime(id: Long, week:Int): TaskCurrentTime
+    fun getTaskWithTime(id: Long, week:Int): TaskCurrentTime
 
 //    @Query("select task.* " +
 //            "from task join (" +
@@ -37,13 +37,32 @@ interface TaskEventDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertDate(date: Date)
 
-    @Insert
-    fun insertEvent(event: Event)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertEvent(event: Event):Long
 
+    @Query("update event set time = time+:time where task_id = :task_id and date = :date")
+    fun updateEvent(date:Long, task_id: Long, time:Int)
+
+//https://stackoverflow.com/questions/45677230/android-room-persistence-library-upsert
     @Transaction
     fun insertEventWithWeek(date: Date, event: Event){
         insertDate(date)
-        insertEvent(event)
+        val st:Long = insertEvent(event)
+        if( st == -1L){
+            updateEvent(date = event.date, task_id = event.task_id, time = event.time)
+        }
     }
+
+    //Test
+    @Query("select event.* from event " +
+            "where event.task_id=:id")
+    fun getEventById(id:Long):List<Event>
+
+    @Query("select date.* from date ")
+    fun getAllDate():List<Date>
+
+    @Query("select task.* from task " +
+            "where task.id=:id")
+    fun getTaskById(id:Long):Task
 
 }

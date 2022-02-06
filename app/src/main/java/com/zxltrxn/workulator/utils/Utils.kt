@@ -6,8 +6,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.zxltrxn.workulator.data.models.*
 import com.zxltrxn.workulator.data.storage.entities.*
+import com.zxltrxn.workulator.data.storage.entities.Date
 import com.zxltrxn.workulator.domain.models.*
 import java.time.LocalDate
+import java.time.temporal.WeekFields
+import java.util.*
 
 fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
@@ -17,14 +20,16 @@ fun Context.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
 
 fun LocalDate.toLong():Long = this.toEpochDay()
 
+fun LocalDate.getWeek():Int = this.get(WeekFields.of(Locale.US).weekOfYear())
+
 fun Long.toLocalDate():LocalDate = LocalDate.ofEpochDay(this)
 
 
 
-fun TaskModel.toTask(): Task = Task(task_id = this.id,name = this.name,
+fun TaskModel.toTask(): Task = Task(id = this.id,name = this.name,
         target_time = this.targetTime,presets = this.presets, active = this.isActive)
 
-fun Task.toTaskModel():TaskModel = TaskModel(id = this.task_id, name = this.name,
+fun Task.toTaskModel():TaskModel = TaskModel(id = this.id, name = this.name,
         targetTime = this.target_time, presets = this.presets, isActive = this.active)
 
 
@@ -53,6 +58,13 @@ fun TaskWithEvents.toTaskEventsModel(): TaskEventsModel = TaskEventsModel(
 
 fun TaskEventsModel.toTaskWithEvents(): TaskWithEvents = TaskWithEvents(
     task = this.task.toTask(), events = this.events.map{it.toEventWithWeek()})
+
+
+fun Task.isEquivalent(other:Task): Boolean = (this.name == other.name &&
+        this.target_time == other.target_time && this.presets == other.presets &&
+        this.active == other.active)
+
+
 
 
 

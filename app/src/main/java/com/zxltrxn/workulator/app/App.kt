@@ -1,10 +1,10 @@
 package com.zxltrxn.workulator.app
 
 import android.app.Application
-import com.zxltrxn.workulator.BuildConfig
 import com.zxltrxn.workulator.di.appModule
 import com.zxltrxn.workulator.di.dataModule
 import com.zxltrxn.workulator.di.domainModule
+import org.koin.android.BuildConfig
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.android.ext.koin.androidLogger

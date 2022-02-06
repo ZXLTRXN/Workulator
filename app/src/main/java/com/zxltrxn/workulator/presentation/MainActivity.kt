@@ -45,8 +45,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        Log.d(TAG, "onCreate: ${vm.getf()}")
 
+        vm.getf()
 //        lifecycleScope.launch { правильный подход
 //            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
 //            }
@@ -75,10 +75,10 @@ fun CircularProgressBar(
     percentage:Float,
     number:Int,
     fontSize:TextUnit = 28.sp,
-    radius:Dp = 50.dp,
+    radius:Dp = 80.dp,
     color:Color = Color.Green,
-    strokeWidth:Dp = 8.dp,
-    animDuration:Int = 1000,
+    strokeWidth:Dp = 15.dp,
+    animDuration:Int = 800,
     animDelay: Int = 0
 ){
     var animationPlayed by remember{
