@@ -17,21 +17,7 @@ class MainViewModel(private val setTask: SetTask,
     private val getStatsForTasks: GetStatisticsForTasks,
     private val setEvent: SetEvent) :ViewModel(){
 
-    init{
-//        setTask(TaskModel("task",12,listOf(12,52)))
-//        setTask(TaskModel("task new",25,listOf(180,90)))
-    }
-
 
 //    private var taskIds: List<Long> = getTasks()
-
-
-//
-    fun getf(){
-    Log.d(TAG, "getf: 2")
-    }
-
-
-
 
 }

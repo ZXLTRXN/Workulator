@@ -5,6 +5,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.zxltrxn.workulator.ui.Elevation
+import com.zxltrxn.workulator.ui.LocalElevation
+import com.zxltrxn.workulator.ui.LocalSpacing
+import com.zxltrxn.workulator.ui.Spacing
 
 private val DarkColorPalette = darkColors(
     primary = Purple200,
@@ -34,11 +39,16 @@ fun WorkulatorTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
     } else {
         LightColorPalette
     }
+    CompositionLocalProvider(
+        LocalSpacing provides Spacing(),
+        LocalElevation provides Elevation()
+    ) {
+        MaterialTheme(
+            colors = colors,
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
 
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
 }
