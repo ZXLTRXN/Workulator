@@ -8,21 +8,24 @@ import org.koin.test.KoinTest
 
 import org.koin.test.inject
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.zxltrxn.workulator.data.models.TaskCurrentTime
 import com.zxltrxn.workulator.data.storage.entities.Date
 import com.zxltrxn.workulator.data.storage.entities.Event
+import com.zxltrxn.workulator.data.storage.entities.Task
 import com.zxltrxn.workulator.di.roomTestModule
 import com.zxltrxn.workulator.utils.*
 
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext
 
 import org.koin.core.context.GlobalContext.loadKoinModules
 
 import org.koin.core.context.GlobalContext.stopKoin
 import org.koin.core.context.GlobalContext.startKoin
-//import org.koin.core.context.stopKoin
-//import org.koin.core.context.startKoin
 import org.koin.test.KoinTestRule
 import java.time.LocalDate
 import java.util.*
@@ -41,25 +44,20 @@ class TaskEventDaoTest: KoinTest {
     )
 
 
-//    @get:Rule
-//    val koinTestRule = KoinTestRule.create {
-//        // Your KoinApplication instance here
-//        modules(roomTestModule)
-//    }
-
     @Before
     fun before() {
-        loadKoinModules(roomTestModule)
-
-//        startKoin {
-//           androidContext(InstrumentationRegistry.getInstrumentation().targetContext)
-//            modules(roomTestModule) }
+//        loadKoinModules(roomTestModule)
+        if (GlobalContext.getOrNull() == null) {
+            startKoin {
+               androidContext(InstrumentationRegistry.getInstrumentation().targetContext)
+                modules(roomTestModule) }
+        }
     }
-//
-//    @After
-//    fun after() {
-//        stopKoin()
-//    }
+
+    @After
+    fun after() {
+        stopKoin()
+    }
 
     @Test
     fun shouldAddTask() {
@@ -105,9 +103,9 @@ class TaskEventDaoTest: KoinTest {
         assertEquals(ids, listOf<Long>(1))
     }
 
-    private fun insertRandomTask(): Long {
-        val task = TestUtils.randomTasks(1).get(0)
-        dao.insertTask(task)
+    private fun insertRandomTask(task: Task? = null): Long {
+        val addedTask = task ?: TestUtils.randomTasks(1).get(0)
+        dao.insertTask(addedTask)
         return dao.getTaskIds().get(0)
     }
 
@@ -177,11 +175,51 @@ class TaskEventDaoTest: KoinTest {
         assertEquals(expDate, resDate)
     }
 
-//    @Test
-//    fun shouldReturnTaskWithTimeCorrectly(){
-//        val tasks = TestUtils.randomTasks(3)
-//
-//    }
+    @Test
+    fun shouldReturnTaskWithTimeCorrectly(){
+        val task = Task(name = "a", target_time = 500, presets = listOf(100,200),active = true)
+        val id = insertRandomTask(task)
+        task.id = id
+//        val id1 = insertRandomTask()
+        val i = 0
+
+        val events = TestUtils.randomEventModel(
+            date = date[i],
+            taskId = id,
+            size = size[i],
+            time = time[i]
+        ).plus(TestUtils.randomEventModel(
+            date = date[i + 1],
+            taskId = id,
+            size = size[i],
+            time = time[i])
+        ).plus(TestUtils.randomEventModel(
+            date = date[i + 2],
+            taskId = id,
+            size = size[i + 1],
+            time = time[i + 1])
+        )
+
+        for (event in events)
+            dao.insertEventWithWeek(date = event.toDate(), event = event.toEvent())
+        val week = dao.getAllDate().get(1).week_num
+        val  resTask1 = dao.getTaskWithTime(id,week)
+        val  resTask2 = dao.getTaskWithTime(id,week-1)
+        val  resTask3 = dao.getTaskWithTime(id,week+5)
+
+        var expTime1 = 0
+        for( j in size.indices)
+            expTime1 += size[j]*time[j]
+
+        val expTime2 = size[i] * time[i]
+
+        val  expTask1 = TaskCurrentTime(task = task, currentTime = expTime1) // несколько event
+        val  expTask2 = TaskCurrentTime(task = task, currentTime = expTime2) // один event
+        val  expTask3 = TaskCurrentTime(task = task, currentTime = 0) //нет event
+        assertEquals(expTask1,resTask1)
+        assertEquals(expTask2,resTask2)
+        assertEquals(expTask3,resTask3)
+    }
 }
 
 
