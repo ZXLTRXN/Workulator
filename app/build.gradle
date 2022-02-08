@@ -55,6 +55,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
     implementation 'androidx.activity:activity-compose:1.4.0'
 
+    implementation "com.chargemap.compose:numberpicker:0.0.11"
+
     //Koin
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"

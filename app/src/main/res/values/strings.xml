@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Workulator</string>
     <string name="enter_name_task">Название задачи</string>
+    <string name="new_task">Новая задача</string>
     <string name="name_task_placeholder">Работа</string>
+    <string name="save">Сохранить</string>
     <string name="ask_target_time">Задать время</string>
 </resources>
