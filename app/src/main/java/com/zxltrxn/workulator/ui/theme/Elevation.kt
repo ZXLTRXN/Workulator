@@ -1,4 +1,4 @@
-package com.zxltrxn.workulator.ui
+package com.zxltrxn.workulator.ui.theme
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable

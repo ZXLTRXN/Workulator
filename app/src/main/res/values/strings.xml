@@ -4,5 +4,6 @@
     <string name="new_task">Новая задача</string>
     <string name="name_task_placeholder">Работа</string>
     <string name="save">Сохранить</string>
+    <string name="no_valid_task_input_data">Некорректный ввод</string>
     <string name="ask_target_time">Задать время</string>
 </resources>
