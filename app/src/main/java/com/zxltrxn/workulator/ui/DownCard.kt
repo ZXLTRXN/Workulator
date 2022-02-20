@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -15,19 +17,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.zIndex
 import com.chargemap.compose.numberpicker.NumberPicker
 import com.zxltrxn.workulator.R
 import com.zxltrxn.workulator.ui.theme.elevation
 import com.zxltrxn.workulator.ui.theme.spacing
+import com.zxltrxn.workulator.utils.toHoursMinutes
 import com.zxltrxn.workulator.utils.toast
 
 @Composable
 fun DownCardBox(height:Float,
                 content: @Composable ColumnScope.() -> Unit
 ){
-    Box(contentAlignment = Alignment.BottomCenter
+    Box(modifier = Modifier.zIndex(1f),
+        contentAlignment = Alignment.BottomCenter
     ){
         Surface(modifier = Modifier
             .fillMaxWidth()
@@ -49,12 +57,15 @@ fun DownCardBox(height:Float,
 
 @Composable
 fun PickTimeCard(validation:(time:Int)->Boolean,
-                 onSave:(time:Int)->Unit, height: Float,
+                 onSave:(time:Int)->Unit,
+                 onBack:()->Unit,
+                 height: Float,
                  time:Int = 0
 ){
     val context = LocalContext.current
-    var hours by rememberSaveable{ mutableStateOf(time % 60) }
-    var minutes by rememberSaveable { mutableStateOf(time.rem(60)) }
+    val t = time.toHoursMinutes()
+    var hours by rememberSaveable{ mutableStateOf(t[0]) }
+    var minutes by rememberSaveable { mutableStateOf(t[1]) }
 
     DownCardBox(height = height) {
 
@@ -64,17 +75,28 @@ fun PickTimeCard(validation:(time:Int)->Boolean,
             onChangeHours = { hours = it }, onChangeMinutes = { minutes = it })
 
         val validError = stringResource(id = R.string.no_valid_task_input_data)
-        Button(shape = MaterialTheme.shapes.medium,
-            onClick = {
-                val curTime = minutes + hours * 60
-                if (validation(curTime)) {
-                    onSave(curTime)
-                } else {
-                    context.toast(validError, Toast.LENGTH_SHORT)
-                }
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = { onBack() }) {
+                Text(text = stringResource(id = R.string.go_back),
+                    style = MaterialTheme.typography.button)
             }
-        ) {
-            Text(stringResource(id = R.string.save), style = MaterialTheme.typography.button)
+
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.large))
+
+            Button(shape = MaterialTheme.shapes.medium,
+                onClick = {
+                    val curTime = minutes + hours * 60
+                    if (validation(curTime)) {
+                        onSave(curTime)
+                    } else {
+                        context.toast(validError, Toast.LENGTH_SHORT)
+                    }
+                }
+            ) {
+                Text(stringResource(id = R.string.save), style = MaterialTheme.typography.button)
+            }
+
         }
     }
 }
@@ -82,6 +104,7 @@ fun PickTimeCard(validation:(time:Int)->Boolean,
 @Composable
 fun AdditionTaskCard(validation:(time:Int, name:String)->Boolean,
                      onSave:(time:Int, name:String)->Unit,
+                     onBack:()->Unit,
                      height:Float, titleId:Int = R.string.new_task,
                      taskName:String = "", time:Int = 0
 ){
@@ -89,8 +112,9 @@ fun AdditionTaskCard(validation:(time:Int, name:String)->Boolean,
     ) {
         val context = LocalContext.current
         val validError = stringResource(id = R.string.no_valid_task_input_data)
-        var hours by remember { mutableStateOf(time % 60) }
-        var minutes by remember { mutableStateOf(time.rem(60)) }
+        val t = time.toHoursMinutes()
+        var hours by remember { mutableStateOf(t[0]) }
+        var minutes by remember { mutableStateOf(t[1]) }
         var name by rememberSaveable { mutableStateOf(taskName) }
 
         Text(style = MaterialTheme.typography.h1,text = stringResource(id = titleId))
@@ -100,17 +124,29 @@ fun AdditionTaskCard(validation:(time:Int, name:String)->Boolean,
         MyDatePicker(hours = hours,minutes = minutes,
             onChangeHours = {hours = it}, onChangeMinutes = {minutes = it})
 
-        Button(shape = MaterialTheme.shapes.medium,
-            onClick = {
-                val curTime = minutes+hours*60
-                if(validation(curTime,name)){
-                    onSave(curTime,name)
-                }else{
-                    context.toast(validError, Toast.LENGTH_SHORT)
-                }
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End) {
+            TextButton(onClick = { onBack() }) {
+                Text(
+                    text = stringResource(id = R.string.go_back),
+                    style = MaterialTheme.typography.button
+                )
             }
-        ) {
-            Text(stringResource(id = R.string.save), style = MaterialTheme.typography.button)
+
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.large))
+
+            Button(shape = MaterialTheme.shapes.medium,
+                onClick = {
+                    val curTime = minutes + hours * 60
+                    if (validation(curTime, name)) {
+                        onSave(curTime, name)
+                    } else {
+                        context.toast(validError, Toast.LENGTH_SHORT)
+                    }
+                }
+            ) {
+                Text(stringResource(id = R.string.save), style = MaterialTheme.typography.button)
+            }
         }
     }
 }
@@ -140,10 +176,14 @@ fun MyDatePicker(hours:Int,minutes:Int,
 @Composable
 fun MyTextField(shape: Shape, value:String, onChange:(String)->Unit
 ){
+    val focusManager = LocalFocusManager.current
+
     TextField(modifier = Modifier
         .border(border = BorderStroke(width = MaterialTheme.spacing.extraSmall,
             color = MaterialTheme.colors.primary),
             shape = shape),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
         value = value, onValueChange = { onChange(it)  },
         label ={ Text(stringResource(id = R.string.enter_name_task)) },
         placeholder = { Text(stringResource(id = R.string.name_task_placeholder)) },

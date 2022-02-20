@@ -5,7 +5,8 @@ import com.zxltrxn.workulator.domain.models.TaskTimeModel
 import com.zxltrxn.workulator.domain.repositoryinterfaces.TaskEventsRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetTaskStatus(private val taskEventsRepo: TaskEventsRepository) {
+class GetTasksStatus(private val taskEventsRepo: TaskEventsRepository) {
 
-    operator fun invoke(id: Long, week:Int):TaskTimeModel = taskEventsRepo.readTaskWithTime(id, week)
+    suspend operator fun invoke(week:Int):Flow<List<TaskTimeModel>> =
+        taskEventsRepo.readTasksWithTime(week)
 }

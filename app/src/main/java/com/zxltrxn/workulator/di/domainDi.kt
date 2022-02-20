@@ -21,8 +21,8 @@ val domainModule = module{
         SetEvent(eventRepo = get())
     }
 
-    factory<GetTaskStatus>{
-        GetTaskStatus(taskEventsRepo = get())
+    factory<GetTasksStatus>{
+        GetTasksStatus(taskEventsRepo = get())
     }
 
     factory<GetStatisticsForTasks>{

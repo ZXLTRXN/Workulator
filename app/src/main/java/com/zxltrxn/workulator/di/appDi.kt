@@ -10,7 +10,7 @@ val appModule = module{
         setTask = get(),
         editTask = get(),
         getTasks = get(),
-        getTaskStatus = get(),
+        getTasksStatus = get(),
         getStatsForTasks = get(),
         setEvent = get()
         )

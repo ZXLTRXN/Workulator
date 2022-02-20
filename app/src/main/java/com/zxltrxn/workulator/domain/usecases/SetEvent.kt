@@ -10,12 +10,7 @@ import java.util.*
 
 
 class SetEvent(private val eventRepo: EventRepository) {
-    operator fun invoke(event: EventModel) {
-//        val date: LocalDate = LocalDate.now()
-//        val date = LocalDate.of(year, month, day)
-
-        event.week = event.date.getWeek()
+    suspend operator fun invoke(event: EventModel) {
         eventRepo.createEvent(event)
     }
-
 }

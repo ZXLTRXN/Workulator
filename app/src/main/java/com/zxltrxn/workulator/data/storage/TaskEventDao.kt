@@ -19,12 +19,19 @@ interface TaskEventDao {
     @Query("select id from task")
     fun getTaskIds(): List<Long>
 
+//    @Query("select task.*, tmp.currentTime " +
+//            "from task join (" +
+//                "select sum(event.time) as currentTime " +
+//                "from event join date on event.date = date.date " +
+//                "where event.task_id=:id and date.week_num =:week) as tmp")
+//    fun getTaskWithTime(id: Long, week:Int): TaskCurrentTime
+
     @Query("select task.*, tmp.currentTime " +
-            "from task join (" +
-                "select sum(event.time) as currentTime " +
-                "from event join date on event.date = date.date " +
-                "where event.task_id=:id and date.week_num =:week) as tmp")
-    fun getTaskWithTime(id: Long, week:Int): TaskCurrentTime
+            "from task left join (select task_id, sum(event.time) as currentTime " +
+            "from event join date on event.date = date.date " +
+            "where date.week_num = :week " +
+            "group by task_id) tmp on task.id = tmp.task_id")
+    fun getTasksWithTime(week:Int): Flow<List<TaskCurrentTime>>
 
 //    @Query("select task.* " +
 //            "from task join (" +

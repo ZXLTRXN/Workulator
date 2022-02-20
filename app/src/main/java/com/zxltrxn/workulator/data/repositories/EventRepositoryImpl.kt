@@ -12,7 +12,7 @@ import com.zxltrxn.workulator.utils.toEventWithWeek
 
 class EventRepositoryImpl(private val storage:TaskEventDao):EventRepository {
 
-    override fun createEvent(event: EventModel) =
+    override suspend fun createEvent(event: EventModel) =
         storage.insertEventWithWeek(date = event.toDate(),event = event.toEvent())
 
 }

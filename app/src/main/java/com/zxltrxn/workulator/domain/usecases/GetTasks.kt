@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 class GetTasks(private val taskRepo: TaskRepository) {
 
-    operator fun invoke(): List<Long> = taskRepo.getTaskIds()
+    suspend operator fun invoke(): List<Long> = taskRepo.getTaskIds()
 }

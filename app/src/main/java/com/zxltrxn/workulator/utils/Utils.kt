@@ -66,5 +66,23 @@ fun Task.isEquivalent(other:Task): Boolean = (this.name == other.name &&
 
 
 
+fun Int.toHoursMinutes():Array<Int>{
+    val hours = this.div(60)
+    val minutes = this.rem(60)
+    return arrayOf(hours,minutes)
+}
+
+fun Int.toTimeString():String {
+    val t = this.toHoursMinutes()
+    return if(this == 0 ||t[0] == 0) "${t[1]} мин"
+    else
+        if(t[1] == 0) "${t[0]} ч"
+        else "${t[0]} ч\n${t[1]} мин"
+
+
+}
+
+
+
 
 

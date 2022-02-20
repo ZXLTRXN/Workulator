@@ -38,9 +38,9 @@ class TaskEventDaoTest: KoinTest {
     private val size = listOf(3,7)
     private val time =  listOf(100,10)
     private val date = listOf(
-        LocalDate.of(2021, 1, 30),
-        LocalDate.of(2021, 1, 31),
-        LocalDate.of(2021, 2, 6)
+        LocalDate.of(2021, 1, 30),//1
+        LocalDate.of(2021, 1, 31),//2
+        LocalDate.of(2021, 2, 6)//2
     )
 
 
@@ -176,7 +176,7 @@ class TaskEventDaoTest: KoinTest {
     }
 
     @Test
-    fun shouldReturnTaskWithTimeCorrectly(){
+    fun shouldReturnTasksWithTimeCorrectly(){
         val task = Task(name = "a", target_time = 500, presets = listOf(100,200),active = true)
         val id = insertRandomTask(task)
         task.id = id
@@ -200,12 +200,13 @@ class TaskEventDaoTest: KoinTest {
             time = time[i + 1])
         )
 
+
         for (event in events)
             dao.insertEventWithWeek(date = event.toDate(), event = event.toEvent())
         val week = dao.getAllDate().get(1).week_num
-        val  resTask1 = dao.getTaskWithTime(id,week)
-        val  resTask2 = dao.getTaskWithTime(id,week-1)
-        val  resTask3 = dao.getTaskWithTime(id,week+5)
+        val  resTask1 = dao.getTasksWithTime(week)
+        val  resTask2 = dao.getTasksWithTime(week-1)
+        val  resTask3 = dao.getTasksWithTime(week+5)
 
         var expTime1 = 0
         for( j in size.indices)
@@ -213,9 +214,9 @@ class TaskEventDaoTest: KoinTest {
 
         val expTime2 = size[i] * time[i]
 
-        val  expTask1 = TaskCurrentTime(task = task, currentTime = expTime1) // несколько event
-        val  expTask2 = TaskCurrentTime(task = task, currentTime = expTime2) // один event
-        val  expTask3 = TaskCurrentTime(task = task, currentTime = 0) //нет event
+        val  expTask1 = listOf(TaskCurrentTime(task = task, currentTime = expTime1)) // несколько event
+        val  expTask2 = listOf(TaskCurrentTime(task = task, currentTime = expTime2)) // один event
+        val  expTask3 = listOf(TaskCurrentTime(task = task, currentTime = 0)) //нет event
         assertEquals(expTask1,resTask1)
         assertEquals(expTask2,resTask2)
         assertEquals(expTask3,resTask3)
