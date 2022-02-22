@@ -17,6 +17,10 @@ val domainModule = module{
         GetTasks(taskRepo = get())
     }
 
+    factory<DeleteTask>{
+        DeleteTask(taskRepo = get())
+    }
+
     factory<SetEvent>{
         SetEvent(eventRepo = get())
     }
@@ -28,4 +32,5 @@ val domainModule = module{
     factory<GetStatisticsForTasks>{
         GetStatisticsForTasks(taskEventsRepo = get())
     }
+
 }

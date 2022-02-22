@@ -9,6 +9,7 @@ val appModule = module{
         MainViewModel(
         setTask = get(),
         editTask = get(),
+        deleteTask = get(),
         getTasks = get(),
         getTasksStatus = get(),
         getStatsForTasks = get(),

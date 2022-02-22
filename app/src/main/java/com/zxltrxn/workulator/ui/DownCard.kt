@@ -1,5 +1,6 @@
 package com.zxltrxn.workulator.ui
 
+import android.widget.TextClock
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -159,17 +160,20 @@ fun MyDatePicker(hours:Int,minutes:Int,
                  minutesRange:IntRange = 0..59,
                  textStyle: TextStyle = MaterialTheme.typography.h2
 ){
-    Row(){
+    Row(verticalAlignment = Alignment.CenterVertically){
         NumberPicker(value = hours, range = hoursRange,textStyle = textStyle,
             onValueChange = { onChangeHours(it) }
         )
-
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
+        Text(stringResource(R.string.Hours))
         Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraLarge))
 
         NumberPicker(value = minutes, range = (minutesRange).plus(minutesRange),
             textStyle = textStyle,
             onValueChange = {onChangeMinutes(it)}
         )
+        Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
+        Text(stringResource(R.string.Minutes))
     }
 }
 

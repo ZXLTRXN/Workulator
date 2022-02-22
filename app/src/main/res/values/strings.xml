@@ -8,4 +8,6 @@
     <string name="go_back">Назад</string>
     <string name="no_valid_task_input_data">Некорректный ввод</string>
     <string name="ask_target_time">Задать время</string>
+    <string name="Hours">ч</string>
+    <string name="Minutes">мин</string>
 </resources>

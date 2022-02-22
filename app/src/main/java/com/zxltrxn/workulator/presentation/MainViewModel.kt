@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zxltrxn.workulator.domain.models.*
 import com.zxltrxn.workulator.domain.usecases.*
+import com.zxltrxn.workulator.utils.Constants.DEFAULT_TASK_INDEX
 import com.zxltrxn.workulator.utils.Constants.TAG
 import com.zxltrxn.workulator.utils.getWeek
 import kotlinx.coroutines.*
@@ -18,12 +19,13 @@ import java.time.LocalDate
 
 class MainViewModel(private val setTask: SetTask,
                     private val editTask: EditTask,
+                    private val deleteTask: DeleteTask,
                     private val getTasks: GetTasks,
                     private val getTasksStatus: GetTasksStatus,
                     private val getStatsForTasks: GetStatisticsForTasks,
                     private val setEvent: SetEvent) :ViewModel(){
 
-//    private var tasks = flowOf(listOf<TaskTimeModel>())
+
     private val _uiState = mutableStateOf(UIState(isLoading = true))
     val uiState: State<UIState> = _uiState
 
@@ -35,7 +37,10 @@ class MainViewModel(private val setTask: SetTask,
             val tasks = getTasksStatus(week = week)
             tasks.collect{
                 withContext(Dispatchers.Main){
-                    _uiState.value = UIState(isLoading = false, items = it)
+                    if(it.isEmpty())
+                        _uiState.value = UIState(isLoading = false, items = it)
+                    else
+                        _uiState.value = UIState(isLoading = false, items = it, index = 0)
                 }
             }
         }
@@ -44,6 +49,12 @@ class MainViewModel(private val setTask: SetTask,
     fun addTask(time:Int, name:String){
         viewModelScope.launch(Dispatchers.IO){
             setTask(TaskModel(name = name, targetTime = time))
+        }
+    }
+
+    fun removeTask(task: TaskModel){
+        viewModelScope.launch(Dispatchers.IO){
+            deleteTask(task)
         }
     }
 
@@ -60,6 +71,18 @@ class MainViewModel(private val setTask: SetTask,
             setEvent(EventModel(date = LocalDate.now(), taskId = id,time = time, week = week))
         }
     }
+
+    fun nextTask(){
+        if(_uiState.value.index == _uiState.value.items.size - 1) return
+        else _uiState.value = _uiState.value.copy(index = _uiState.value.index + 1)
+
+    }
+
+    fun previousTask(){
+        if(_uiState.value.index == DEFAULT_TASK_INDEX) return
+        else _uiState.value = _uiState.value.copy(index = _uiState.value.index - 1)
+    }
+
 
 
 

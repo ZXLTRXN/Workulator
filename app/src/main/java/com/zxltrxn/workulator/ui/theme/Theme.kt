@@ -6,15 +6,16 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import com.zxltrxn.workulator.ui.theme.Elevation
 import com.zxltrxn.workulator.ui.theme.LocalElevation
 import com.zxltrxn.workulator.ui.theme.LocalSpacing
 import com.zxltrxn.workulator.ui.theme.Spacing
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
+    primary = Teal200,
+    primaryVariant = Teal500,
+    secondary = Purple200
 )
 
 private val LightColorPalette = lightColors(

@@ -2,10 +2,20 @@ package com.zxltrxn.workulator.ui
 
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,15 +28,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.zxltrxn.workulator.R
 import com.zxltrxn.workulator.domain.models.TaskTimeModel
 import com.zxltrxn.workulator.presentation.MainViewModel
@@ -34,10 +47,12 @@ import com.zxltrxn.workulator.ui.theme.elevation
 import com.zxltrxn.workulator.ui.theme.spacing
 import com.zxltrxn.workulator.utils.Constants.CUSTOM_PICKER_INDEX
 import com.zxltrxn.workulator.utils.Constants.DEFAULT_PICKER_INDEX
+import com.zxltrxn.workulator.utils.Constants.DEFAULT_TASK_INDEX
 import com.zxltrxn.workulator.utils.Constants.TAG
 import com.zxltrxn.workulator.utils.toTimeString
 
 
+//@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ProgressScreen(
     viewModel: MainViewModel,
@@ -48,15 +63,17 @@ fun ProgressScreen(
 
     var additionTaskHeight = 0.55f
     var pickTimeHeight = 0.4f
-    val taskStatusHeight = 0.55f
+    val taskStatusHeight = 0.6f
     val allScreenHeight = 1f
     val eventBtnSize = 100.dp
     val pickTimeBtnSize = 40.dp
+    val iteratorBtnSize = 60.dp
+
 
     var additionState by rememberSaveable { mutableStateOf(false) }
     var pickTimeState by rememberSaveable { mutableStateOf(false) }
     var pickerIndex by remember { mutableStateOf(DEFAULT_PICKER_INDEX) }
-    val uiState = viewModel.uiState
+
 
     when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> {
@@ -66,6 +83,15 @@ fun ProgressScreen(
         else -> {}
     }
 
+//    AnimatedVisibility(visible = additionState) {
+//        AdditionTaskCard(height = additionTaskHeight,
+//            validation = validateTask, onSave = { time, name ->
+//                viewModel.addTask(time = time, name = name)
+//                additionState = false
+//            },
+//            onBack = { additionState = false })
+//    }
+
     when {
         additionState -> AdditionTaskCard(height = additionTaskHeight,
             validation = validateTask, onSave = { time, name ->
@@ -73,129 +99,143 @@ fun ProgressScreen(
                 additionState = false
             },
             onBack = { additionState = false })
-
-
-//        pickTimeState-> PickTimeCard(height = pickTimeHeight,validation = validateTime,
-//            onSave = {  time->
-//
-//                pickTimeState = false
-//            },
-//            onBack = {pickTimeState = false})
-
         else -> {}
     }
-    if (!uiState.value.isLoading) {
-        if (uiState.value.items.isEmpty()) {
-            Box(
+
+    if (!viewModel.uiState.value.isLoading) {
+        if (viewModel.uiState.value.index == DEFAULT_TASK_INDEX) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(MaterialTheme.spacing.medium)
+                    .padding(MaterialTheme.spacing.medium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge)
             )
             {
                 EmptyTaskStatus(modifier = Modifier.fillMaxHeight(taskStatusHeight)) {
                     additionState = true
                 }
+                Spacer(modifier = Modifier.height(eventBtnSize))
+                if(viewModel.uiState.value.items.isNotEmpty())
+                    Iterators(modifier = Modifier, size = iteratorBtnSize,
+                        isLeftActive = false,
+                        onLeftClick = {},
+                        onRightClick = {viewModel.nextTask()})
             }
         } else {
-            uiState.value.items.forEach { task ->
-
-
-                if (pickTimeState) {
-
-                    PickTimeCard(height = pickTimeHeight, validation = validateTime,
-                        onSave = { time ->
-                            pickTimeState = false
-                            if (pickerIndex == CUSTOM_PICKER_INDEX) {
-                                viewModel.setEvent(id = task.task.id, time = time)
-                            } else {
-                                viewModel.setPreset(
-                                    task = task.task,
-                                    newPreset = time, index = pickerIndex
-                                )
-                            }
-                            pickerIndex = DEFAULT_PICKER_INDEX
-                        },
-                        onBack = {
-                            pickTimeState = false
-                            pickerIndex = DEFAULT_PICKER_INDEX
-                        })
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(MaterialTheme.spacing.medium)
-                )
-                {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        TaskStatus(
-                            modifier = Modifier.fillMaxHeight(taskStatusHeight),
-                            taskTime = task
-                        )
-//                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraLarge))
-                        Row(//buttons
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            PresetButton(time = task.task.presets[0],
-                                eventSize = eventBtnSize,
-                                pickTimeSize = pickTimeBtnSize,
-                                onPickTimeClick = {
-                                    pickTimeState = true
-                                    pickerIndex = 0
-                                },
-                                onSetEventClick = {
-                                    viewModel.setEvent(
-                                        id = task.task.id,
-                                        time = task.task.presets[0]
+                val task = viewModel.uiState.value.items[viewModel.uiState.value.index]
+                    if (pickTimeState) {
+                        PickTimeCard(height = pickTimeHeight, validation = validateTime,
+                            onSave = { time ->
+                                pickTimeState = false
+                                if (pickerIndex == CUSTOM_PICKER_INDEX) {
+                                    viewModel.setEvent(id = task.task.id, time = time)
+                                } else {
+                                    viewModel.setPreset(
+                                        task = task.task,
+                                        newPreset = time, index = pickerIndex
                                     )
-                                })
-                            SetEventButton(time = stringResource(id = R.string.ask_event_time),
-                                size = eventBtnSize,
-                                onClick = {
-                                    pickTimeState = true
-                                    pickerIndex = CUSTOM_PICKER_INDEX
-                                })
-                            PresetButton(time = task.task.presets[1],
-                                eventSize = eventBtnSize,
-                                pickTimeSize = pickTimeBtnSize,
-                                onPickTimeClick = {
-                                    pickTimeState = true
-                                    pickerIndex = 1
-                                },
-                                onSetEventClick = {
-                                    viewModel.setEvent(
-                                        id = task.task.id,
-                                        time = task.task.presets[1]
-                                    )
-                                })
-                        }
-//                            Button(onClick = { additionState = true }) {
-//
-//                            }
+                                }
+                                pickerIndex = DEFAULT_PICKER_INDEX
+                            },
+                            onBack = {
+                                pickTimeState = false
+                                pickerIndex = DEFAULT_PICKER_INDEX
+                            })
                     }
-                }
-            }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(MaterialTheme.spacing.medium)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraLarge),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            TaskStatus(
+                                modifier = Modifier.fillMaxHeight(taskStatusHeight),
+                                taskTime = task, onDelete = {viewModel.removeTask(task.task)}
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                PresetButton(time = task.task.presets[0],
+                                    eventSize = eventBtnSize,
+                                    pickTimeSize = pickTimeBtnSize,
+                                    onPickTimeClick = {
+                                        pickTimeState = true
+                                        pickerIndex = 0
+                                    },
+                                    onSetEventClick = {
+                                        viewModel.setEvent(
+                                            id = task.task.id,
+                                            time = task.task.presets[0]
+                                        )
+                                    })
+                                SetEventButton(time = stringResource(id = R.string.ask_event_time),
+                                    size = eventBtnSize,
+                                    onClick = {
+                                        pickTimeState = true
+                                        pickerIndex = CUSTOM_PICKER_INDEX
+                                    })
+                                PresetButton(time = task.task.presets[1],
+                                    eventSize = eventBtnSize,
+                                    pickTimeSize = pickTimeBtnSize,
+                                    onPickTimeClick = {
+                                        pickTimeState = true
+                                        pickerIndex = 1
+                                    },
+                                    onSetEventClick = {
+                                        viewModel.setEvent(
+                                            id = task.task.id,
+                                            time = task.task.presets[1]
+                                        )
+                                    })
+                            }
+                            if(viewModel.uiState.value.items.size-1 == viewModel.uiState.value.index)
+                                Iterators(modifier = Modifier, size = iteratorBtnSize,
+                                    onLeftClick = {viewModel.previousTask()},
+                                    isRightActive = false,
+                                    onRightClick = {})
+                            else
+                                Iterators(modifier = Modifier, size = iteratorBtnSize,
+                                onLeftClick = {viewModel.previousTask()},
+                                onRightClick = {viewModel.nextTask()})
+                        }
+                    }
         }
     }
 }
 
 @Composable
-fun TaskStatus(modifier: Modifier = Modifier, taskTime: TaskTimeModel) {
+fun TaskStatus(modifier: Modifier = Modifier, taskTime: TaskTimeModel, onDelete:()->Unit) {
     val percentage = taskTime.currentTime.toFloat() / taskTime.task.targetTime.toFloat()
     TaskStatusBox(modifier = modifier) {
+//        Box(modifier = Modifier.padding(top = MaterialTheme.spacing.medium).background(Color.Red),
+//            contentAlignment = Alignment.TopEnd){
+//
+//        }
+
+        Box(modifier = Modifier.padding(MaterialTheme.spacing.medium),
+            contentAlignment = Alignment.TopEnd){
+            Icon(modifier = Modifier
+                .then(Modifier.size(24.dp))
+                .clickable{ onDelete() },
+                painter = painterResource(id = R.drawable.ic_baseline_close_24),
+                contentDescription = "delete Task")
+        }
+
         Column(
             modifier = Modifier.padding(MaterialTheme.spacing.large),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.large)
         ) {
-            Text(style = MaterialTheme.typography.h1, text = taskTime.task.name)
+
+            Text(style = MaterialTheme.typography.h1, text = taskTime.task.name, textAlign = TextAlign.Center)
+
             CircularProgressBar(percentage = percentage, targetValue = taskTime.task.targetTime)
             Text(
                 style = MaterialTheme.typography.h2, text = taskTime.currentTime.toTimeString(),
@@ -226,6 +266,7 @@ fun TaskStatusBox(modifier: Modifier = Modifier, content: @Composable () -> Unit
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .zIndex(-1f)
             .padding(top = MaterialTheme.spacing.medium),
         color = MaterialTheme.colors.background,
         elevation = MaterialTheme.elevation.large,
@@ -238,7 +279,7 @@ fun TaskStatusBox(modifier: Modifier = Modifier, content: @Composable () -> Unit
 fun CircularProgressBar(
     percentage: Float,
     targetValue: Int,
-    fontSize: TextUnit = 28.sp,
+    fontSize: TextUnit = 30.sp,
     radius: Dp = 90.dp,
     color: Color = MaterialTheme.colors.primary,
     strokeWidth: Dp = 15.dp,
@@ -270,6 +311,13 @@ fun CircularProgressBar(
                 sweepAngle = 360 * curPercentage.value,
                 useCenter = false,
                 style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
+            )
+            drawArc(
+                color = color,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                style = Stroke(1.dp.toPx(), cap = StrokeCap.Butt)
             )
         }
         Column(
@@ -329,4 +377,31 @@ fun PresetButton(
     }
 
 }
+
+@Composable
+fun Iterators(modifier: Modifier = Modifier, size:Dp = 60.dp,
+              isLeftActive:Boolean = true,
+              isRightActive:Boolean = true,
+              onLeftClick:()->Unit,
+              onRightClick:()->Unit) {
+    Row(modifier = modifier
+        .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if(isLeftActive)
+            Button(modifier = Modifier.size(size),
+                shape = CircleShape,
+                onClick = onLeftClick) {
+                Text("<")
+            }
+        if(isRightActive)
+            Button(modifier = Modifier.size(size),
+                shape = CircleShape,
+                onClick = onRightClick) {
+                Text(">")
+            }
+    }
+}
+
 
