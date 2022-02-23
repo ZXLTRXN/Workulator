@@ -1,9 +1,7 @@
 package com.zxltrxn.workulator.ui
 
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
@@ -43,7 +41,7 @@ import com.zxltrxn.workulator.utils.Constants.TAG
 import com.zxltrxn.workulator.utils.toTimeString
 
 
-//@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ProgressScreen(
     viewModel: MainViewModel,
@@ -64,29 +62,34 @@ fun ProgressScreen(
     var pickerIndex by remember { mutableStateOf(DEFAULT_PICKER_INDEX) }
 
 
-//    AnimatedVisibility(visible = additionState) {
-//        AdditionTaskCard(height = additionTaskHeight,
-//            validation = validateTask, onSave = { time, name ->
-//                viewModel.addTask(time = time, name = name)
-//                additionState = false
-//            },
-//            onBack = { additionState = false })
-//    }
-
-    when {
-        additionState -> AdditionTaskCard(height = additionTaskHeight,
+    AnimatedVisibility(modifier = Modifier.zIndex(10f),
+        visible = additionState,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top)
+    ) {
+        AdditionTaskCard(height = additionTaskHeight,
             validation = validateTask, onSave = { time, name ->
                 viewModel.addTask(time = time, name = name)
                 additionState = false
             },
             onBack = { additionState = false })
-        else -> {}
     }
 
+
+//    when {
+//        additionState -> AdditionTaskCard(height = additionTaskHeight,
+//            validation = validateTask, onSave = { time, name ->
+//                viewModel.addTask(time = time, name = name)
+//                additionState = false
+//            },
+//            onBack = { additionState = false })
+//        else -> {}
+//    }
+
     if (!viewModel.uiState.value.isLoading) {
-//        Crossfade(targetState = viewModel.uiState.value, animationSpec = tween(3000)) {
+        Crossfade(targetState = viewModel.uiState.value, animationSpec = tween(400)) {
 //            Log.d(TAG, "ProgressScreen: $it")
-            if (viewModel.uiState.value.index == DEFAULT_TASK_INDEX) {
+            if (it.index == DEFAULT_TASK_INDEX) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -98,33 +101,46 @@ fun ProgressScreen(
                         additionState = true
                     }
                     Spacer(modifier = Modifier.height(eventBtnSize))
-                    if (viewModel.uiState.value.items.isNotEmpty())
+                    if (it.items.isNotEmpty())
                         Iterators(modifier = Modifier, size = iteratorBtnSize,
                             isLeftActive = false,
                             onLeftClick = {},
                             onRightClick = { viewModel.nextTask() })
                 }
             } else {
-                val task = viewModel.uiState.value.items[viewModel.uiState.value.index]
-                if (pickTimeState) {
-                    PickTimeCard(height = pickTimeHeight, validation = validateTime,
-                        onSave = { time ->
-                            pickTimeState = false
-                            if (pickerIndex == CUSTOM_PICKER_INDEX) {
-                                viewModel.setEvent(id = task.task.id, time = time)
-                            } else {
-                                viewModel.setPreset(
-                                    task = task.task,
-                                    newPreset = time, index = pickerIndex
-                                )
-                            }
-                            pickerIndex = DEFAULT_PICKER_INDEX
-                        },
-                        onBack = {
-                            pickTimeState = false
-                            pickerIndex = DEFAULT_PICKER_INDEX
-                        })
+                val task = it.items[it.index]
+//                if (pickTimeState) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(10f),
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    AnimatedVisibility(
+                        visible = pickTimeState,
+                        enter = expandVertically(expandFrom = Alignment.Top),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top)
+                    ) {
+                        PickTimeCard(height = pickTimeHeight, validation = validateTime,
+                            onSave = { time ->
+                                pickTimeState = false
+                                if (pickerIndex == CUSTOM_PICKER_INDEX) {
+                                    viewModel.setEvent(id = task.task.id, time = time)
+                                } else {
+                                    viewModel.setPreset(
+                                        task = task.task,
+                                        newPreset = time, index = pickerIndex
+                                    )
+                                }
+                                pickerIndex = DEFAULT_PICKER_INDEX
+                            },
+                            onBack = {
+                                pickTimeState = false
+                                pickerIndex = DEFAULT_PICKER_INDEX
+                            })
+                    }
                 }
+
+//            }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -138,7 +154,10 @@ fun ProgressScreen(
 
                         TaskStatus(
                             modifier = Modifier.fillMaxHeight(taskStatusHeight),
-                            taskTime = task, onDelete = { viewModel.removeTask(task.task) }
+                            taskTime = task, onDelete = {
+                                viewModel.removeTask(task.task)
+                                pickTimeState = false
+                            }
                         )
                         Row(
                             modifier = Modifier
@@ -178,7 +197,7 @@ fun ProgressScreen(
                                     )
                                 })
                         }
-                        if (viewModel.uiState.value.items.size - 1 == viewModel.uiState.value.index)
+                        if (it.items.size - 1 == it.index)
                             Iterators(modifier = Modifier, size = iteratorBtnSize,
                                 onLeftClick = { viewModel.previousTask() },
                                 isRightActive = false,
@@ -189,7 +208,7 @@ fun ProgressScreen(
                                 onRightClick = { viewModel.nextTask() })
                     }
                 }
-//            }
+            }
         }
     }
 }
@@ -206,8 +225,8 @@ fun TaskStatus(modifier: Modifier = Modifier, taskTime: TaskTimeModel, onDelete:
         Box(modifier = Modifier.padding(MaterialTheme.spacing.medium),
             contentAlignment = Alignment.TopEnd){
             Icon(modifier = Modifier
-                .then(Modifier.size(38.dp))
                 .padding(MaterialTheme.spacing.small)
+                .then(Modifier.size(34.dp))
                 .clickable { onDelete() },
                 painter = painterResource(id = R.drawable.ic_baseline_close_24),
                 contentDescription = "delete Task")

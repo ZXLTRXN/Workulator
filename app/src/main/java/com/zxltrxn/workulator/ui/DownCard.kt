@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.zIndex
 import com.chargemap.compose.numberpicker.NumberPicker
 import com.zxltrxn.workulator.R
@@ -35,8 +36,7 @@ import com.zxltrxn.workulator.utils.toast
 fun DownCardBox(height:Float,
                 content: @Composable ColumnScope.() -> Unit
 ){
-    Box(modifier = Modifier.zIndex(1f),
-        contentAlignment = Alignment.BottomCenter
+    Box(contentAlignment = Alignment.BottomCenter
     ){
         Surface(modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +186,8 @@ fun MyTextField(shape: Shape, value:String, onChange:(String)->Unit
         .border(border = BorderStroke(width = MaterialTheme.spacing.extraSmall,
             color = MaterialTheme.colors.primary),
             shape = shape),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done,
+            capitalization = KeyboardCapitalization.Sentences),
         keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
         value = value, onValueChange = { onChange(it)  },
         label ={ Text(stringResource(id = R.string.enter_name_task)) },
