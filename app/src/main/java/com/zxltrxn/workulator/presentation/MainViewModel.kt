@@ -27,6 +27,7 @@ class MainViewModel(private val setTask: SetTask,
 
 
     private val _uiState = mutableStateOf(UIState(isLoading = true))
+    var index = 0
     val uiState: State<UIState> = _uiState
 
     private val week:Int = LocalDate.now().getWeek()
@@ -39,20 +40,27 @@ class MainViewModel(private val setTask: SetTask,
                 withContext(Dispatchers.Main){
                     if(it.isEmpty())
                         _uiState.value = UIState(isLoading = false, items = it)
-                    else
-                        _uiState.value = UIState(isLoading = false, items = it, index = 0)
+                    else _uiState.value = UIState(isLoading = false, items = it, index = index)
+//                        if(uiState.value == UIState(isLoading = true))
+//                            _uiState.value = UIState(isLoading = false, items = it, index = 0)
+//                        else
+//                            _uiState.value = UIState(isLoading = false,
+//                                items = it, index = index)
                 }
             }
         }
     }
 
     fun addTask(time:Int, name:String){
+        index = 0
         viewModelScope.launch(Dispatchers.IO){
             setTask(TaskModel(name = name, targetTime = time))
         }
+
     }
 
     fun removeTask(task: TaskModel){
+        index -= 1
         viewModelScope.launch(Dispatchers.IO){
             deleteTask(task)
         }
@@ -72,22 +80,32 @@ class MainViewModel(private val setTask: SetTask,
         }
     }
 
+//    fun nextTask(){
+//        if(_uiState.value.index == _uiState.value.items.size - 1) return
+//        else _uiState.value = _uiState.value.copy(index = _uiState.value.index + 1)
+//
+//    }
+//
+//    fun previousTask(){
+//        if(_uiState.value.index == DEFAULT_TASK_INDEX) return
+//        else _uiState.value = _uiState.value.copy(index = _uiState.value.index - 1)
+//    }
+
     fun nextTask(){
-        if(_uiState.value.index == _uiState.value.items.size - 1) return
-        else _uiState.value = _uiState.value.copy(index = _uiState.value.index + 1)
+        if(index == _uiState.value.items.size - 1) return
+        else {
+            index++
+            _uiState.value = _uiState.value.copy(index = index)
+        }
 
     }
 
     fun previousTask(){
-        if(_uiState.value.index == DEFAULT_TASK_INDEX) return
-        else _uiState.value = _uiState.value.copy(index = _uiState.value.index - 1)
+        if(index == DEFAULT_TASK_INDEX) return
+        else {
+            index--
+            _uiState.value = _uiState.value.copy(index = index)
+        }
     }
-
-
-
-
-
-
-
 
 }

@@ -106,7 +106,7 @@ fun PickTimeCard(validation:(time:Int)->Boolean,
 fun AdditionTaskCard(validation:(time:Int, name:String)->Boolean,
                      onSave:(time:Int, name:String)->Unit,
                      onBack:()->Unit,
-                     height:Float, titleId:Int = R.string.new_task,
+                     height:Float, titleId:Int = R.string.add_task,
                      taskName:String = "", time:Int = 0
 ){
     DownCardBox(height = height

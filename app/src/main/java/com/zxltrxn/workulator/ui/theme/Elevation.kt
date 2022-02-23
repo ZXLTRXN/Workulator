@@ -8,7 +8,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class Elevation(
-    val default: Dp = 7.dp,
+    val default: Dp = 4.dp,
+    val small:Dp = 2.dp,
     val large:Dp = 14.dp
 )
 
