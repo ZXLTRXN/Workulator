@@ -52,7 +52,7 @@ fun ProgressScreen(
 
     val additionTaskHeight = 0.55f
     val pickTimeHeight = 0.4f
-    val taskStatusHeight = 0.55f
+    val taskStatusHeight = 0.58f
     val eventBtnSize = 100.dp
     val pickTimeBtnSize = 40.dp
     val iteratorBtnSize = 60.dp
@@ -87,7 +87,7 @@ fun ProgressScreen(
 //    }
 
     if (!viewModel.uiState.value.isLoading) {
-        Crossfade(targetState = viewModel.uiState.value, animationSpec = tween(400)) {
+        Crossfade(targetState = viewModel.uiState.value, animationSpec = tween(200)) {
 //            Log.d(TAG, "ProgressScreen: $it")
             if (it.index == DEFAULT_TASK_INDEX) {
                 Column(
