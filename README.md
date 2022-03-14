@@ -7,6 +7,9 @@
 ## Используются
 Clean architecture с MVVM в presentation слое
 
+<img src="https://i.ibb.co/0D3BTcm/2022-03-14-170735.png" alt="drawing" height ="620" width="600"/>
+
+
 Koin
 
 Room
